@@ -22,15 +22,15 @@ export default class Post extends Component {
       return require('../../resources/img/s2-checked.png')
     return require('../../resources/img/s2.png')
   }
-  like() {
+  like = () => {
     const { foto } = this.state
 
     let novaLista = []
     if (!foto.likeada)
-      novaLista = [...foto.likers, { 'login': 'meuUsuario' }]
+      novaLista = [...foto.likers, { login: 'meuUsuario' }]
     else
       novaLista = foto.likers.filter(
-        liker => this.liker.login !== 'meuUsuario'
+        liker => this.login !== 'meuUsuario'
       )
 
     const fotAtualizada = {
@@ -74,9 +74,15 @@ export default class Post extends Component {
           <TouchableOpacity onPress={this.like}>
             <Image style={styles.botaoDeLike} source={this.carregaIcone(foto.likeada)} />
           </TouchableOpacity>
-          {this.exibeLikes(foto.likers)}
         </View>
+        {this.exibeLikes(foto.likers)}
         {this.exibeLegenda(foto)}
+        {foto.comentarios.map(comentario =>
+          <View style={styles.comentario}>
+            <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
+            <Text>{foto.comentario}</Text>
+          </View>
+        )}
       </View>
     );
   }
