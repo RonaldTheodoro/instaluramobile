@@ -5,11 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  FlatList
-} from 'react-native';
+import { AppRegistry, StyleSheet, FlatList } from 'react-native';
 import Post from './src/components/Post'
 
 export default class InstaluraMobile extends Component {
@@ -25,7 +21,6 @@ export default class InstaluraMobile extends Component {
       .then(json => this.setState({ fotos: json }))
   }
   render() {
-    
     return (
       <FlatList
         style={styles.container}
