@@ -31,16 +31,16 @@ export default class Post extends Component {
 
     let novaLista = []
     if (!foto.likeada)
-      novaLista = [...foto.likers, { login: 'meuUsuario' }]
+      novaLista = [...foto.likers, { login: 'ronaldtheodoro' }]
     else
-      novaLista = foto.likers.filter(liker => liker.login !== 'meuUsuario')
+      novaLista = foto.likers.filter(liker => liker.login !== 'ronaldtheodoro')
 
-    const fotAtualizada = {
+    const fotoAtualizada = {
       ...foto,
       likeada: !foto.likeada,
       likers: novaLista
     }
-    this.setState({ foto: fotAtualizada })
+    this.setState({ foto: fotoAtualizada })
   }
 
   adicionaComentario = () => {
@@ -49,7 +49,7 @@ export default class Post extends Component {
 
     const novaLista = [...this.state.foto.comentarios, {
       id: Math.random(),
-      login: 'meuUsuario',
+      login: 'ronaldtheodoro',
       texto: this.state.valorComentario
     }]
     const fotoAtualizada = {
@@ -75,11 +75,18 @@ export default class Post extends Component {
     if (foto.comentario === '')
       return
 
+    return this.mostrarComentario({
+      login: foto.loginUsuario,
+      texto: foto.comentario
+    })
+  }
+
+  mostrarComentario = (comentario) => {
     return (
-      <View style={styles.comentario}>
-        <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
-        <Text>{foto.comentario}</Text>
-      </View>
+      <Text key={comentario.id} style={styles.comentario}>
+        <Text style={styles.tituloComentario}>{comentario.login}: </Text>
+        <Text>{comentario.texto}</Text>
+      </Text>
     )
   }
 
@@ -99,11 +106,8 @@ export default class Post extends Component {
         </View>
         {this.exibeLikes(foto.likers)}
         {this.exibeLegenda(foto)}
-        {foto.comentarios.map(comentario =>
-          <Text key={comentario.id}>
-            <Text style={styles.tituloComentario}>{comentario.login}: </Text>
-            <Text>{comentario.texto}</Text>
-          </Text>
+        {foto.comentarios.map(
+          comentario => this.mostrarComentario(comentario)
         )}
         <View style={styles.novoComentario}>
           <TextInput
