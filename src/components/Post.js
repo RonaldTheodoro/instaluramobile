@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   TextInput
 } from 'react-native';
+import InputComentario from './InputComentario'
+import Likes from './Likes'
 
 const screen = Dimensions.get('screen')
 
@@ -15,15 +17,8 @@ export default class Post extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      foto: this.props.foto,
-      valorComentario: ''
+      foto: this.props.foto
     }
-  }
-
-  carregaIcone(likeada) {
-    if (likeada)
-      return require('../../resources/img/s2-checked.png')
-    return require('../../resources/img/s2.png')
   }
 
   like = () => {
@@ -43,50 +38,34 @@ export default class Post extends Component {
     this.setState({ foto: fotoAtualizada })
   }
 
-  adicionaComentario = () => {
-    if (this.state.valorComentario === '')
-      return false
+  adicionaComentario = (valorComentario) => {
+    if (valorComentario === '')
+      return
 
     const novaLista = [...this.state.foto.comentarios, {
       id: Math.random(),
       login: 'ronaldtheodoro',
-      texto: this.state.valorComentario
+      texto: valorComentario
     }]
-    const fotoAtualizada = {
-      ...this.state.foto,
-      comentarios: novaLista
-    }
-    this.setState({ foto: fotoAtualizada, valorComentario: '' })
-    this.inputComentario.clear()
-  }
 
-  exibeLikes(likers) {
-    if (likers.length === 0)
-      return
-
-    return (
-      <Text style={styles.likes}>
-        {likers.length} {likers.length > 1 ? 'curtidas' : 'curtida'}
-      </Text>
-    )
+    const fotoAtualizada = { ...this.state.foto, comentarios: novaLista }
+    this.setState({ foto: fotoAtualizada })
   }
 
   exibeLegenda(foto) {
     if (foto.comentario === '')
       return
 
-    return this.mostrarComentario({
-      login: foto.loginUsuario,
-      texto: foto.comentario
-    })
+    const comentario = { login: foto.loginUsuario, texto: foto.comentario }
+    return this.mostrarComentario(comentario)
   }
 
   mostrarComentario = (comentario) => {
     return (
-      <Text key={comentario.id} style={styles.comentario}>
+      <View style={styles.comentario} key={comentario.id}>
         <Text style={styles.tituloComentario}>{comentario.login}: </Text>
         <Text>{comentario.texto}</Text>
-      </Text>
+      </View>
     )
   }
 
@@ -100,26 +79,12 @@ export default class Post extends Component {
         </View>
         <Image source={{ uri: foto.urlFoto }} style={styles.foto} />
         <View style={styles.rodape}>
-          <TouchableOpacity onPress={this.like}>
-            <Image style={styles.botaoDeLike} source={this.carregaIcone(foto.likeada)} />
-          </TouchableOpacity>
-        </View>
-        {this.exibeLikes(foto.likers)}
-        {this.exibeLegenda(foto)}
-        {foto.comentarios.map(
-          comentario => this.mostrarComentario(comentario)
-        )}
-        <View style={styles.novoComentario}>
-          <TextInput
-            style={styles.input}
-            placeholder="Adicione um comentario..."
-            underlineColorAndroid="transparent"
-            ref={input => this.inputComentario = input}
-            onChangeText={texto => this.setState({ valorComentario: texto })} />
-
-          <TouchableOpacity onPress={this.adicionaComentario}>
-            <Image style={styles.botaoDeComentario} source={require('../../resources/img/send.png')} />
-          </TouchableOpacity>
+          <Likes foto={foto} likeCallBack={this.like} />
+          {this.exibeLegenda(foto)}
+          {foto.comentarios.map(
+            comentario => this.mostrarComentario(comentario)
+          )}
+          <InputComentario comentarioCallBack={this.adicionaComentario} />
         </View>
       </View>
     );
@@ -144,36 +109,17 @@ const styles = StyleSheet.create({
   },
   rodape: {
     margin: 10,
-    flexDirection: 'row',
-    alignItems: 'center'
   },
   botaoDeLike: {
     height: 40,
     width: 40,
     marginBottom: 10
   },
-  likes: {
-    fontWeight: 'bold'
-  },
-  comentarios: {
+  comentario: {
     flexDirection: 'row',
   },
   tituloComentario: {
     fontWeight: 'bold',
     marginRight: 5,
-  },
-  input: {
-    height: 40,
-    flex: 1
-  },
-  botaoDeComentario: {
-    height: 30,
-    width: 30
-  },
-  novoComentario: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd'
   }
 });
