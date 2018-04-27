@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, FlatList, Platform } from 'react-native';
+import { StyleSheet, FlatList, Platform, AsyncStorage } from 'react-native';
 import Post from './Post'
 
 
@@ -12,11 +12,15 @@ export default class Feed extends Component {
   }
 
   componentDidMount() {
-    //const url = 'http://instalura-api.herokuapp.com/api/public/fotos/rafael'
-    const url = 'http://instalura-api.herokuapp.com/api/public/fotos/rafael'
-    fetch(url)
+    const url = 'https://instalura-api.herokuapp.com/api/fotos'
+    AsyncStorage.getItem('token')
+      .then(token => {
+        return { headers: new Headers({ "X-AUTH-TOKEN": token }) }
+      })
+      .then(requestInfo => fetch(url, requestInfo))
       .then(response => response.json())
       .then(json => this.setState({ fotos: json }))
+      
   }
 
   buscaPorId = (idFoto) => {

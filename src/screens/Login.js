@@ -32,10 +32,8 @@ export default class Login extends Component {
         throw new Error('Não foi possivel efetuar login')
       return response.text()
     }).then(token => {
-      AsyncStorage.setItem(
-        'usuario',
-        JSON.stringify({ login: this.state.login, token })
-      )
+      AsyncStorage.setItem('token', token)
+      AsyncStorage.setItem('login', this.state.login)
       this.props.navigator.resetTo({
         screen: 'Feed',
         title: 'Instalura',
