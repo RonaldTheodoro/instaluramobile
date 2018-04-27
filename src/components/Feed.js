@@ -34,6 +34,7 @@ export default class Feed extends Component {
   }
 
   like = (idFoto) => {
+    const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`
     const foto = this.buscaPorId(idFoto)
 
     AsyncStorage.getItem('login').then(login => {
@@ -42,53 +43,41 @@ export default class Feed extends Component {
         novaLista = [...foto.likers, { login }]
       else
         novaLista = foto.likers.filter(liker => liker.login !== login)
-
       return novaLista
-    }).then(novaLista => {
-      const fotos = this.atualizaFotos({
-        ...foto,
-        likeada: !foto.likeada,
-        likers: novaLista
-      })
-      this.setState({ fotos })
-    })
-    const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`
+    }).then(likers => this.setState({
+      fotos: this.atualizaFotos({ ...foto, likeada: !foto.likeada, likers })
+    }))
 
-    AsyncStorage.getItem('token')
-      .then(token => {
-        return {
-          method: 'POST',
-          headers: new Headers({ 'X-AUTH-TOKEN': token })
-        }
-      }).then(requestInfo => fetch(url, requestInfo))
+    AsyncStorage.getItem('token').then(token => {
+      return {
+        method: 'POST',
+        headers: new Headers({ 'X-AUTH-TOKEN': token })
+      }
+    }).then(requestInfo => fetch(url, requestInfo))
 
   }
 
   adicionaComentario = (idFoto, valorComentario) => {
     if (valorComentario === '')
       return
-
-    const foto = this.buscaPorId(idFoto)
     const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/comment`
+    const foto = this.buscaPorId(idFoto)
 
-    AsyncStorage.getItem('token')
-      .then(token => {
-        return {
-          method: 'POST',
-          body: JSON.stringify({ texto: valorComentario }),
-          headers: new Headers({
-            'Content-type': 'application/json',
-            'X-AUTH-TOKEN': token
-          })
-        }
-      }).then(requestInfo => fetch(url, requestInfo))
+    AsyncStorage.getItem('token').then(token => {
+      return {
+        method: 'POST',
+        body: JSON.stringify({ texto: valorComentario }),
+        headers: new Headers({
+          'Content-type': 'application/json',
+          'X-AUTH-TOKEN': token
+        })
+      }
+    }).then(requestInfo => fetch(url, requestInfo))
       .then(response => response.json())
       .then(comentario => [...foto.comentarios, comentario])
-      .then(novaLista => {
-        this.setState({
-          fotos: this.atualizaFotos({ ...foto, comentarios: novaLista })
-        })
-      })
+      .then(novaLista => this.setState({
+        fotos: this.atualizaFotos({ ...foto, comentarios: novaLista })
+      }))
   }
 
   render() {
