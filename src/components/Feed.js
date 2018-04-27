@@ -20,7 +20,7 @@ export default class Feed extends Component {
       .then(requestInfo => fetch(url, requestInfo))
       .then(response => response.json())
       .then(json => this.setState({ fotos: json }))
-      
+
   }
 
   buscaPorId = (idFoto) => {
@@ -36,18 +36,32 @@ export default class Feed extends Component {
   like = (idFoto) => {
     const foto = this.buscaPorId(idFoto)
 
-    let novaLista = []
-    if (!foto.likeada)
-      novaLista = [...foto.likers, { login: 'ronaldthe' }]
-    else
-      novaLista = foto.likers.filter(liker => liker.login !== 'ronaldthe')
+    AsyncStorage.getItem('login').then(login => {
+      let novaLista = []
+      if (!foto.likeada)
+        novaLista = [...foto.likers, { login }]
+      else
+        novaLista = foto.likers.filter(liker => liker.login !== login)
 
-    const fotos = this.atualizaFotos({
-      ...foto,
-      likeada: !foto.likeada,
-      likers: novaLista
+      return novaLista
+    }).then(novaLista => {
+      const fotos = this.atualizaFotos({
+        ...foto,
+        likeada: !foto.likeada,
+        likers: novaLista
+      })
+      this.setState({ fotos })
     })
-    this.setState({ fotos })
+    const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`
+
+    AsyncStorage.getItem('token')
+      .then(token => {
+        return {
+          method: 'POST',
+          headers: new Headers({ 'X-AUTH-TOKEN': token })
+        }
+      }).then(requestInfo => fetch(url, requestInfo))
+
   }
 
   adicionaComentario = (idFoto, valorComentario) => {
