@@ -13,7 +13,7 @@ export default class Feed extends Component {
 
   componentDidMount() {
     //const url = 'http://instalura-api.herokuapp.com/api/public/fotos/rafael'
-    const url = 'http://192.168.0.137:8080/api/public/fotos/rafael'
+    const url = 'http://instalura-api.herokuapp.com/api/public/fotos/rafael'
     fetch(url)
       .then(response => response.json())
       .then(json => this.setState({ fotos: json }))

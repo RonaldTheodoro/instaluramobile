@@ -22,7 +22,7 @@ export default class Login extends Component {
   }
 
   efetuaLogin = () => {
-    const url = 'http://192.168.0.137:8080/api/public/login'
+    const url = 'http://instalura-api.herokuapp.com/api/public/login'
     const { login, senha } = this.state
     const body = JSON.stringify({ login, senha })
     const headers = new Headers({ 'Content-Type': 'application/json' })
@@ -36,9 +36,10 @@ export default class Login extends Component {
         'usuario',
         JSON.stringify({ login: this.state.login, token })
       )
-      AsyncStorage.getItem('usuario')
-        .then(usuario => JSON.parse(usuario))
-        .then(usuario => console.warn(usuario.login))
+      this.props.navigator.resetTo({
+        screen: 'Feed',
+        title: 'Instalura',
+      })
     }).catch(error => this.setState({ validacao: error.message }))
   }
 
