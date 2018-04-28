@@ -18,6 +18,16 @@ export default class Feed extends Component {
       .then(json => this.setState({ fotos: json }))
   }
 
+  verPerfilUsuario = (idFoto) => {
+    const foto = this.buscaPorId(idFoto)
+
+    this.props.navigator.push({
+      screen: 'PerfilUsuario',
+      title: foto.loginUsuario,
+      backButtonTitle: ''
+    })
+  }
+
   buscaPorId = (idFoto) => {
     return this.state.fotos.find(foto => foto.id === idFoto)
   }
@@ -77,7 +87,8 @@ export default class Feed extends Component {
           <Post
             foto={item}
             likeCallBack={this.like}
-            comentarioCallBack={this.adicionaComentario} />} />
+            comentarioCallBack={this.adicionaComentario}
+            verPerfilCallBack={this.verPerfilUsuario} />} />
     );
   }
 }

@@ -5,8 +5,9 @@ import Feed from './components/Feed'
 import Login from './screens/Login'
 
 export default () => {
-  Navigation.registerComponent('Login', () => Login);
-  Navigation.registerComponent('Feed', () => Feed);
+  Navigation.registerComponent('Login', () => Login)
+  Navigation.registerComponent('Feed', () => Feed)
+  Navigation.registerComponent('PerfilUsuario', () => Feed)
 
   const feed = { screen: 'Feed', title: 'Instalura' }
   const login = { screen: 'Login', title: 'login' }

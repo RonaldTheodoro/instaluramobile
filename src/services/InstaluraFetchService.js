@@ -28,7 +28,7 @@ export default class InstaluraFetchService {
     }).then(requestInfo => fetch(url, requestInfo))
       .then(response => {
         if(response.ok)
-          response.json()
+          return response.json()
         throw new Error('Não foi possivel completar a operação')  
       })
   }
