@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, FlatList, Platform, AsyncStorage } from 'react-native';
 import Post from './Post'
 import InstaluraFetchService from '../services/InstaluraFetchService'
+import Notificacao from '../api/Notificacao'
 
 
 export default class Feed extends Component {
@@ -42,6 +43,7 @@ export default class Feed extends Component {
     }))
 
     InstaluraFetchService.post(`/fotos/${idFoto}/like`)
+      .catch(error => Notificacao.exibe('Ops..', 'Algo deu errado ao curtir'))
   }
 
   adicionaComentario = (idFoto, valorComentario) => {
