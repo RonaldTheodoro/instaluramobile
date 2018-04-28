@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, FlatList, Platform, AsyncStorage } from 'react-native';
 import Post from './Post'
+import InstaluraFetchService from '../services/InstaluraFetchService'
 
 
 export default class Feed extends Component {
@@ -12,15 +13,8 @@ export default class Feed extends Component {
   }
 
   componentDidMount() {
-    const url = 'https://instalura-api.herokuapp.com/api/fotos'
-    AsyncStorage.getItem('token')
-      .then(token => {
-        return { headers: new Headers({ "X-AUTH-TOKEN": token }) }
-      })
-      .then(requestInfo => fetch(url, requestInfo))
-      .then(response => response.json())
+    InstaluraFetchService.get('/fotos')
       .then(json => this.setState({ fotos: json }))
-
   }
 
   buscaPorId = (idFoto) => {
@@ -34,7 +28,6 @@ export default class Feed extends Component {
   }
 
   like = (idFoto) => {
-    const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`
     const foto = this.buscaPorId(idFoto)
 
     AsyncStorage.getItem('login').then(login => {
@@ -48,13 +41,7 @@ export default class Feed extends Component {
       fotos: this.atualizaFotos({ ...foto, likeada: !foto.likeada, likers })
     }))
 
-    AsyncStorage.getItem('token').then(token => {
-      return {
-        method: 'POST',
-        headers: new Headers({ 'X-AUTH-TOKEN': token })
-      }
-    }).then(requestInfo => fetch(url, requestInfo))
-
+    InstaluraFetchService.post(`/fotos/${idFoto}/like`)
   }
 
   adicionaComentario = (idFoto, valorComentario) => {
@@ -62,18 +49,9 @@ export default class Feed extends Component {
       return
     const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/comment`
     const foto = this.buscaPorId(idFoto)
+    const comentario = { texto: valorComentario }
 
-    AsyncStorage.getItem('token').then(token => {
-      return {
-        method: 'POST',
-        body: JSON.stringify({ texto: valorComentario }),
-        headers: new Headers({
-          'Content-type': 'application/json',
-          'X-AUTH-TOKEN': token
-        })
-      }
-    }).then(requestInfo => fetch(url, requestInfo))
-      .then(response => response.json())
+    InstaluraFetchService.post(`/fotos/${idFoto}/comment`, comentario)
       .then(comentario => [...foto.comentarios, comentario])
       .then(novaLista => this.setState({
         fotos: this.atualizaFotos({ ...foto, comentarios: novaLista })
