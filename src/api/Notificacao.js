@@ -1,7 +1,10 @@
-import { ToastAndroid } from 'react-native'
+import { Platform, ToastAndroid, AlertIOS } from 'react-native'
 
 export default class Notificacao {
   static exibe(titulo, mensagem) {
-    ToastAndroid.show(mensagem, ToastAndroid.SHORT)
+    if (Platform.OS === 'android')
+      ToastAndroid.show(mensagem, ToastAndroid.SHORT)
+    else if (Platform.OS === 'android')
+      AlertIOS.alert(titulo, mensagem)
   }
 }
