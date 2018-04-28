@@ -29,6 +29,7 @@ export default class Feed extends Component {
   }
 
   like = (idFoto) => {
+    const listaOriginal = this.state.fotos
     const foto = this.buscaPorId(idFoto)
 
     AsyncStorage.getItem('login').then(login => {
@@ -43,10 +44,14 @@ export default class Feed extends Component {
     }))
 
     InstaluraFetchService.post(`/fotos/${idFoto}/like`)
-      .catch(error => Notificacao.exibe('Ops..', 'Algo deu errado ao curtir'))
+      .catch(error => {
+        this.setState({ fotos: listaOriginal })
+        Notificacao.exibe('Ops..', 'Algo deu errado ao curtir')
+      })
   }
 
   adicionaComentario = (idFoto, valorComentario) => {
+    const listaOriginal = this.state.fotos
     if (valorComentario === '')
       return
     const url = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/comment`
@@ -57,7 +62,10 @@ export default class Feed extends Component {
       .then(comentario => [...foto.comentarios, comentario])
       .then(novaLista => this.setState({
         fotos: this.atualizaFotos({ ...foto, comentarios: novaLista })
-      }))
+      })).catch(error => {
+        this.setState({ fotos: listaOriginal })
+        Notificacao.exibe('Ops..', 'Algo deu errado ao comentar')
+      })
   }
 
   render() {
